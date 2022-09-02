@@ -16,6 +16,10 @@
 		7342FC5828BFAB7200F2BC59 /* UpComingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7342FC5728BFAB7200F2BC59 /* UpComingViewController.swift */; };
 		7342FC5A28BFAB8700F2BC59 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7342FC5928BFAB8700F2BC59 /* SearchViewController.swift */; };
 		7342FC5C28BFAB9600F2BC59 /* DownloadsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7342FC5B28BFAB9600F2BC59 /* DownloadsViewController.swift */; };
+		735B583D28C0AD2700C56E60 /* HeroHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 735B583C28C0AD2700C56E60 /* HeroHeader.swift */; };
+		735B583F28C0AD5600C56E60 /* Color*.swift in Sources */ = {isa = PBXBuildFile; fileRef = 735B583E28C0AD5600C56E60 /* Color*.swift */; };
+		73942F6E28C221C500074E9D /* HomeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73942F6D28C221C500074E9D /* HomeButton.swift */; };
+		73FEAA8C28C11B710059B940 /* HeroHeaderCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73FEAA8B28C11B710059B940 /* HeroHeaderCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +34,10 @@
 		7342FC5728BFAB7200F2BC59 /* UpComingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpComingViewController.swift; sourceTree = "<group>"; };
 		7342FC5928BFAB8700F2BC59 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		7342FC5B28BFAB9600F2BC59 /* DownloadsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadsViewController.swift; sourceTree = "<group>"; };
+		735B583C28C0AD2700C56E60 /* HeroHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroHeader.swift; sourceTree = "<group>"; };
+		735B583E28C0AD5600C56E60 /* Color*.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color*.swift"; sourceTree = "<group>"; };
+		73942F6D28C221C500074E9D /* HomeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeButton.swift; sourceTree = "<group>"; };
+		73FEAA8B28C11B710059B940 /* HeroHeaderCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroHeaderCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,11 +70,15 @@
 		7342FC3E28BF83F400F2BC59 /* Netflix Clone */ = {
 			isa = PBXGroup;
 			children = (
+				735B583728C0A6AF00C56E60 /* Model */,
+				735B583828C0A6B600C56E60 /* View */,
+				735B583628C0A6A000C56E60 /* ViewModel */,
 				7342FC5328BFA94000F2BC59 /* Controller */,
 				7342FC5428BFA97100F2BC59 /* Delegates */,
 				7342FC4828BF83F500F2BC59 /* Assets.xcassets */,
 				7342FC4A28BF83F500F2BC59 /* LaunchScreen.storyboard */,
 				7342FC4D28BF83F500F2BC59 /* Info.plist */,
+				735B583E28C0AD5600C56E60 /* Color*.swift */,
 			);
 			path = "Netflix Clone";
 			sourceTree = "<group>";
@@ -90,6 +102,38 @@
 				7342FC4128BF83F400F2BC59 /* SceneDelegate.swift */,
 			);
 			path = Delegates;
+			sourceTree = "<group>";
+		};
+		735B583628C0A6A000C56E60 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		735B583728C0A6AF00C56E60 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				735B583C28C0AD2700C56E60 /* HeroHeader.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		735B583828C0A6B600C56E60 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				73942F6C28C220C300074E9D /* UIButton */,
+				73FEAA8B28C11B710059B940 /* HeroHeaderCollectionViewCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		73942F6C28C220C300074E9D /* UIButton */ = {
+			isa = PBXGroup;
+			children = (
+				73942F6D28C221C500074E9D /* HomeButton.swift */,
+			);
+			path = UIButton;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -162,11 +206,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				735B583D28C0AD2700C56E60 /* HeroHeader.swift in Sources */,
+				735B583F28C0AD5600C56E60 /* Color*.swift in Sources */,
 				7342FC5A28BFAB8700F2BC59 /* SearchViewController.swift in Sources */,
+				73FEAA8C28C11B710059B940 /* HeroHeaderCollectionViewCell.swift in Sources */,
 				7342FC4428BF83F400F2BC59 /* MainTabBarController.swift in Sources */,
 				7342FC5C28BFAB9600F2BC59 /* DownloadsViewController.swift in Sources */,
 				7342FC4028BF83F400F2BC59 /* AppDelegate.swift in Sources */,
 				7342FC5828BFAB7200F2BC59 /* UpComingViewController.swift in Sources */,
+				73942F6E28C221C500074E9D /* HomeButton.swift in Sources */,
 				7342FC4228BF83F400F2BC59 /* SceneDelegate.swift in Sources */,
 				7342FC5628BFAB6000F2BC59 /* HomeViewController.swift in Sources */,
 			);
