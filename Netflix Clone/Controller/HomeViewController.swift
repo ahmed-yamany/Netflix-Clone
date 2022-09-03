@@ -67,6 +67,11 @@ class HomeViewController: UIViewController {
         networkRequest()
         collectionView.delegate = self
         configureNavigationItem()
+        
+        Task{
+            let movies = try await NetworkLayer.getTreandingTVs().send()
+            print(movies.results![0])
+        }
     
     }
     
