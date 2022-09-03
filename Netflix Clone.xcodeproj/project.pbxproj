@@ -18,6 +18,7 @@
 		7342FC5C28BFAB9600F2BC59 /* DownloadsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7342FC5B28BFAB9600F2BC59 /* DownloadsViewController.swift */; };
 		735B583D28C0AD2700C56E60 /* HeroHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 735B583C28C0AD2700C56E60 /* HeroHeader.swift */; };
 		735B583F28C0AD5600C56E60 /* Color*.swift in Sources */ = {isa = PBXBuildFile; fileRef = 735B583E28C0AD5600C56E60 /* Color*.swift */; };
+		7372AB5328C2617E00130A4C /* SectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7372AB5228C2617E00130A4C /* SectionHeaderView.swift */; };
 		73942F6E28C221C500074E9D /* HomeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73942F6D28C221C500074E9D /* HomeButton.swift */; };
 		73FEAA8C28C11B710059B940 /* HeroHeaderCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73FEAA8B28C11B710059B940 /* HeroHeaderCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
@@ -36,6 +37,7 @@
 		7342FC5B28BFAB9600F2BC59 /* DownloadsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadsViewController.swift; sourceTree = "<group>"; };
 		735B583C28C0AD2700C56E60 /* HeroHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroHeader.swift; sourceTree = "<group>"; };
 		735B583E28C0AD5600C56E60 /* Color*.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color*.swift"; sourceTree = "<group>"; };
+		7372AB5228C2617E00130A4C /* SectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeaderView.swift; sourceTree = "<group>"; };
 		73942F6D28C221C500074E9D /* HomeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeButton.swift; sourceTree = "<group>"; };
 		73FEAA8B28C11B710059B940 /* HeroHeaderCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroHeaderCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -123,7 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				73942F6C28C220C300074E9D /* UIButton */,
-				73FEAA8B28C11B710059B940 /* HeroHeaderCollectionViewCell.swift */,
+				73942F6F28C2295800074E9D /* Home */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -134,6 +136,15 @@
 				73942F6D28C221C500074E9D /* HomeButton.swift */,
 			);
 			path = UIButton;
+			sourceTree = "<group>";
+		};
+		73942F6F28C2295800074E9D /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				73FEAA8B28C11B710059B940 /* HeroHeaderCollectionViewCell.swift */,
+				7372AB5228C2617E00130A4C /* SectionHeaderView.swift */,
+			);
+			path = Home;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -213,6 +224,7 @@
 				7342FC4428BF83F400F2BC59 /* MainTabBarController.swift in Sources */,
 				7342FC5C28BFAB9600F2BC59 /* DownloadsViewController.swift in Sources */,
 				7342FC4028BF83F400F2BC59 /* AppDelegate.swift in Sources */,
+				7372AB5328C2617E00130A4C /* SectionHeaderView.swift in Sources */,
 				7342FC5828BFAB7200F2BC59 /* UpComingViewController.swift in Sources */,
 				73942F6E28C221C500074E9D /* HomeButton.swift in Sources */,
 				7342FC4228BF83F400F2BC59 /* SceneDelegate.swift in Sources */,

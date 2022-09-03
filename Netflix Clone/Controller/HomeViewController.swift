@@ -8,7 +8,6 @@
 import UIKit
 
 
-
 class HomeViewController: UIViewController {
     
     // MARK: - SubViews
@@ -34,21 +33,26 @@ class HomeViewController: UIViewController {
             }
 
             static var heroHeader: Item? = nil
-            static var moviesCollcetion: [Item] = []
+            static var treandingMovies: [Item] = []
+            static var popular: [Item] = []
+            static var upcomingMovies: [Item] = []
+            static var topRated: [Item] = []
+
             
         }
     }
     
     // MARK: - Properties
     var dataSource: UICollectionViewDiffableDataSource<ViewModel.Section, ViewModel.Item>!
+    var snapshot: NSDiffableDataSourceSnapshot<ViewModel.Section, ViewModel.Item>!
     var sections = [ViewModel.Section]()
-
-
+    
     // MARK: - Views
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         collectionView.register(HeroHeaderCollectionViewCell.self, forCellWithReuseIdentifier: HeroHeaderCollectionViewCell.reuseIdentifer)
-        
+        collectionView.register(SectionHeaderView.self, forSupplementaryViewOfKind: SectionHeaderView.supplementaryViewOfKind, withReuseIdentifier: SectionHeaderView.reuseIdentifer)
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         
 
         view.backgroundColor = .systemBackground
@@ -61,6 +65,9 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         configureDataSource()
         networkRequest()
+        collectionView.delegate = self
+        configureNavigationItem()
+    
     }
     
     override func viewWillLayoutSubviews() {
@@ -68,13 +75,14 @@ class HomeViewController: UIViewController {
         collectionView.frame = view.bounds
     }
     
-
     // MARK: - Network Request
     func networkRequest(){
         ViewModel.Item.heroHeader = .header(HeroHeader())
         
-        ViewModel.Item.moviesCollcetion = [.header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader()))]
-
+        ViewModel.Item.treandingMovies = [.header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader()))]
+        ViewModel.Item.popular = [.header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader()))]
+        ViewModel.Item.upcomingMovies = [.header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader()))]
+        ViewModel.Item.topRated = [.header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader()))]
         configureDataSource()
     }
     
@@ -105,6 +113,9 @@ class HomeViewController: UIViewController {
                 let section = NSCollectionLayoutSection(group: group)
                 section.orthogonalScrollingBehavior = .groupPaging
                 
+                let header = self.createSupplementaryItem(ofWidth: .fractionalWidth(1), ofHeight: .estimated(33), alignment: .top, for: SectionHeaderView.supplementaryViewOfKind)
+                section.boundarySupplementaryItems = [header]
+                
                 return section
             }
         }
@@ -114,17 +125,25 @@ class HomeViewController: UIViewController {
     // MARK: - Configure Data Source
     func configureDataSource() {
         dataSourceInitialization()
-
-        var snapshot = NSDiffableDataSourceSnapshot<ViewModel.Section, ViewModel.Item>()
+        supplementaryViewProfider()
+        snapshot = NSDiffableDataSourceSnapshot<ViewModel.Section, ViewModel.Item>()
         
-//        let treandingMoviesSection = ViewModel.Section.movies("treanding")
-//        let treandingTVSection = ViewModel.Section.movies("TV")
-//
         snapshot.appendSections([.header])
         if let heroHeader = ViewModel.Item.heroHeader{
             snapshot.appendItems([heroHeader], toSection: .header)
         }
-//        snapshot.appendItems(ViewModel.Item.moviesCollcetion, toSection: treandingMoviesSection)
+        
+        let treandingMovies = ViewModel.Section.movies("Treanding Movies")
+        let popular = ViewModel.Section.movies("Popular")
+        let upcomingMovies = ViewModel.Section.movies("Upcoming Movies")
+        let topRated = ViewModel.Section.movies("Top rated")
+        
+        snapshot.appendSections([treandingMovies, popular, upcomingMovies, topRated])
+
+        snapshot.appendItems(ViewModel.Item.treandingMovies, toSection: treandingMovies)
+        snapshot.appendItems(ViewModel.Item.popular, toSection: popular)
+        snapshot.appendItems(ViewModel.Item.upcomingMovies, toSection: upcomingMovies)
+        snapshot.appendItems(ViewModel.Item.topRated, toSection: topRated)
         self.sections = snapshot.sectionIdentifiers
         
         dataSource.apply(snapshot)
@@ -142,14 +161,76 @@ class HomeViewController: UIViewController {
                 if let item = itemIdentifier.header{
                     cell.configureCell(heroHeader: item)
                 }
-                
                 return cell
-            default:
-                fatalError("")
+            case .movies:
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+                cell.backgroundColor = UIColor.random
+                return cell
             }
            
         })
+        
+    }
+    
+    
+    // MARK: - configure Sections Header
+    func createSupplementaryItem(ofWidth width: NSCollectionLayoutDimension,ofHeight height: NSCollectionLayoutDimension, alignment: NSRectAlignment, for supplenentaryKind: String) -> NSCollectionLayoutBoundarySupplementaryItem{
+        
+        let headerItemSize = NSCollectionLayoutSize(widthDimension: width, heightDimension: height)
+        let headerItem = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerItemSize, elementKind: supplenentaryKind, alignment: alignment)
+//        headerItem.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
+        
+        return headerItem
+    }
+    
+    func supplementaryViewProfider(){
+        dataSource.supplementaryViewProvider = { (collectionView, kind, indexPath) -> UICollectionReusableView? in
+            
+            switch kind{
+            case SectionHeaderView.supplementaryViewOfKind:
+                let header = collectionView.dequeueReusableSupplementaryView(ofKind: SectionHeaderView.supplementaryViewOfKind, withReuseIdentifier: SectionHeaderView.reuseIdentifer, for: indexPath) as! SectionHeaderView
+                switch self.sections[indexPath.section]{
+                case .movies(let headerName):
+                    header.configureHeader(headerName)
+                default:
+                    fatalError("")
+                }
+                
+                return header
+            default:
+                fatalError("")
+            }
+            
+        }
     }
 
-
+    
+    // MARK: - Configure navigationItem
+    func configureNavigationItem(){
+        let netflixLogo = UIImage(named: "netflix")?.withRenderingMode(.alwaysOriginal)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: netflixLogo, style: .done, target: nil, action: nil)
+        
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(image: UIImage(systemName: "person"), style: .done, target: nil, action: nil),
+            UIBarButtonItem(image: UIImage(systemName: "play.rectangle"), style: .done, target: nil, action: nil)
+        ]
+        navigationController?.navigationBar.tintColor = .label
+    }
+    
 }
+
+extension HomeViewController: UICollectionViewDelegate{
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let saveAreaOffset = view.safeAreaInsets.top
+        let scrollViewOffset = scrollView.contentOffset.y + saveAreaOffset
+        
+        navigationController?.navigationBar.transform = .init(translationX: 0, y: -scrollViewOffset)
+    }
+    
+ 
+
+    
+}
+
+
+

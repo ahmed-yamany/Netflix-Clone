@@ -11,6 +11,7 @@ import UIKit
 class HeroHeaderCollectionViewCell: UICollectionViewCell {
     static let reuseIdentifer = "HeroHeaderCollectionViewCell"
     
+    
     // MARK: - SubViews
     private let imageView: UIImageView = {
         let imageVeiw = UIImageView()
@@ -42,13 +43,14 @@ class HeroHeaderCollectionViewCell: UICollectionViewCell {
     }()
     
     
+    
     // MARK: - Views
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubview(imageView)
         createGradiantLayer()
         configureStackViewSubViews()
-        
+     
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
