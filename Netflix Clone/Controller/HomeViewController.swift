@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 class HomeViewController: UIViewController {
     
     // MARK: - SubViews
@@ -15,82 +14,112 @@ class HomeViewController: UIViewController {
     
     
     // MARK: - ViewModel
-    enum ViewModel {
         enum Section: Hashable {
            case header
            case movies(String)
        }
-
         enum Item: Hashable{
-            case header(HeroHeader)
-
-            var header: HeroHeader? {
-                if case .header(let header) = self {
+            case heroHeader(HeroHeader)
+            case show(Show)
+            
+            var heroHeader: HeroHeader? {
+                if case .heroHeader(let header) = self {
                     return header
                 } else {
                     return nil
                 }
             }
+            var show: Show?{
+                if case .show(let show) = self {
+                    return show
+                } else {
+                    return nil
+                }
+            }
 
-            static var heroHeader: Item? = nil
-            static var treandingMovies: [Item] = []
-            static var popular: [Item] = []
-            static var upcomingMovies: [Item] = []
-            static var topRated: [Item] = []
-
-            
         }
-    }
     
     // MARK: - Properties
-    var dataSource: UICollectionViewDiffableDataSource<ViewModel.Section, ViewModel.Item>!
-    var snapshot: NSDiffableDataSourceSnapshot<ViewModel.Section, ViewModel.Item>!
-    var sections = [ViewModel.Section]()
+    var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
+    var snapshot: NSDiffableDataSourceSnapshot<Section, Item>!
+    var sections = [Section]()
+    
+     var heroHeader: Item? = nil
+     var treandingMovies: [Item] = []
+     var popularMovies: [Item] = []
+     var upcomingMovies: [Item] = []
+     var topRatedMovies: [Item] = []
+
+    var moviesRequestTask: [IndexPath: Task<Void, Never>] = [:]
+    var topRatedRequestTask: Task<Void, Never>? = nil
     
     // MARK: - Views
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         collectionView.register(HeroHeaderCollectionViewCell.self, forCellWithReuseIdentifier: HeroHeaderCollectionViewCell.reuseIdentifer)
         collectionView.register(SectionHeaderView.self, forSupplementaryViewOfKind: SectionHeaderView.supplementaryViewOfKind, withReuseIdentifier: SectionHeaderView.reuseIdentifer)
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        collectionView.register(MoviesCollectionViewCell.self, forCellWithReuseIdentifier: MoviesCollectionViewCell.reuseIdentifer)
         
 
         view.backgroundColor = .systemBackground
         view.addSubview(collectionView)
         collectionView.collectionViewLayout = collectionViewLayout()
+        configureDataSource()
+        configureNavigationItem()
 
 
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureDataSource()
-        networkRequest()
         collectionView.delegate = self
-        configureNavigationItem()
-        
-        Task{
-            let movies = try await NetworkLayer.getTreandingTVs().send()
-            print(movies.results![0])
-        }
+        networkRequest()
+       
     
     }
-    
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         collectionView.frame = view.bounds
     }
     
-    // MARK: - Network Request
-    func networkRequest(){
-        ViewModel.Item.heroHeader = .header(HeroHeader())
+    
+    // MARK: - Configure NavigationBar
+    func configureNavigationItem(){
+        let netflixLogo = UIImage(named: "netflix")?.withRenderingMode(.alwaysOriginal)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: netflixLogo, style: .done, target: nil, action: nil)
         
-        ViewModel.Item.treandingMovies = [.header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader()))]
-        ViewModel.Item.popular = [.header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader()))]
-        ViewModel.Item.upcomingMovies = [.header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader()))]
-        ViewModel.Item.topRated = [.header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader())), .header(HeroHeader()), .header((HeroHeader()))]
-        configureDataSource()
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(image: UIImage(systemName: "person"), style: .done, target: nil, action: nil),
+            UIBarButtonItem(image: UIImage(systemName: "play.rectangle"), style: .done, target: nil, action: nil)
+        ]
+        navigationController?.navigationBar.tintColor = .label
     }
     
+    func endAllTasks(){
+        topRatedRequestTask = nil
+        self.moviesRequestTask.values.forEach({ $0.cancel()})
+        self.moviesRequestTask = [:]
+
+    }
+}
+// MARK: - Configure CollectionViewDelegate
+extension HomeViewController: UICollectionViewDelegate{
+    // change navbar position based on scrolling
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let saveAreaOffset = view.safeAreaInsets.top
+        let scrollViewOffset = scrollView.contentOffset.y + saveAreaOffset
+        
+        navigationController?.navigationBar.transform = .init(translationX: 0, y: -scrollViewOffset)
+    }
+    
+    // end task for not showing cell
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        moviesRequestTask[indexPath]?.cancel()
+    }
+    
+}
+
+// MARK: - Configure CollectinsViewDataSource
+extension HomeViewController{
     // MARK: - CollectionViewLayout
     func collectionViewLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
@@ -105,7 +134,6 @@ class HomeViewController: UIViewController {
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 
                 let section = NSCollectionLayoutSection(group: group)
-                section.orthogonalScrollingBehavior = .groupPaging
                 return section
                        
             case .movies:
@@ -116,10 +144,12 @@ class HomeViewController: UIViewController {
                 let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.85),heightDimension: .estimated(200))
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 2)
                 let section = NSCollectionLayoutSection(group: group)
-                section.orthogonalScrollingBehavior = .groupPaging
+                section.orthogonalScrollingBehavior = .continuous
                 
                 let header = self.createSupplementaryItem(ofWidth: .fractionalWidth(1), ofHeight: .estimated(33), alignment: .top, for: SectionHeaderView.supplementaryViewOfKind)
                 section.boundarySupplementaryItems = [header]
+                
+                section.contentInsets = NSDirectionalEdgeInsets(top: 15, leading: 0, bottom: 20, trailing: 0)
                 
                 return section
             }
@@ -129,47 +159,59 @@ class HomeViewController: UIViewController {
     
     // MARK: - Configure Data Source
     func configureDataSource() {
+        endAllTasks()
+        
         dataSourceInitialization()
         supplementaryViewProfider()
-        snapshot = NSDiffableDataSourceSnapshot<ViewModel.Section, ViewModel.Item>()
+        snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
         
         snapshot.appendSections([.header])
-        if let heroHeader = ViewModel.Item.heroHeader{
+        if let heroHeader = heroHeader{
             snapshot.appendItems([heroHeader], toSection: .header)
         }
         
-        let treandingMovies = ViewModel.Section.movies("Treanding Movies")
-        let popular = ViewModel.Section.movies("Popular")
-        let upcomingMovies = ViewModel.Section.movies("Upcoming Movies")
-        let topRated = ViewModel.Section.movies("Top rated")
+        let treandingMoviesSection = Section.movies("Treanding Movies")
+        let popularMoviesSection = Section.movies("Popular")
+        let upcomingMoviesSection = Section.movies("Upcoming Movies")
+        let topRatedMoviesSection = Section.movies("Top rated")
         
-        snapshot.appendSections([treandingMovies, popular, upcomingMovies, topRated])
+        snapshot.appendSections([treandingMoviesSection, popularMoviesSection, upcomingMoviesSection, topRatedMoviesSection])
 
-        snapshot.appendItems(ViewModel.Item.treandingMovies, toSection: treandingMovies)
-        snapshot.appendItems(ViewModel.Item.popular, toSection: popular)
-        snapshot.appendItems(ViewModel.Item.upcomingMovies, toSection: upcomingMovies)
-        snapshot.appendItems(ViewModel.Item.topRated, toSection: topRated)
+        snapshot.appendItems(self.treandingMovies, toSection: treandingMoviesSection)
+        snapshot.appendItems(self.popularMovies, toSection: popularMoviesSection)
+        snapshot.appendItems(self.upcomingMovies, toSection: upcomingMoviesSection)
+        snapshot.appendItems(self.topRatedMovies, toSection: topRatedMoviesSection)
         self.sections = snapshot.sectionIdentifiers
         
-        dataSource.apply(snapshot)
+        dataSource.apply(snapshot, animatingDifferences: true)
 
     }
 
     
-    // MARK: - Data Source initialization
+    // MARK: - cell for item at
     func dataSourceInitialization(){
         dataSource = .init(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
             let section = self.sections[indexPath.section]
             switch section{
             case .header:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HeroHeaderCollectionViewCell.reuseIdentifer, for: indexPath) as! HeroHeaderCollectionViewCell
-                if let item = itemIdentifier.header{
+                if let item = itemIdentifier.heroHeader{
                     cell.configureCell(heroHeader: item)
                 }
                 return cell
             case .movies:
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-                cell.backgroundColor = UIColor.random
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MoviesCollectionViewCell.reuseIdentifer, for: indexPath) as! MoviesCollectionViewCell
+                
+                if let movie = itemIdentifier.show, let imagePath = movie.posterPath{
+                    self.moviesRequestTask[indexPath] = Task{
+                        guard let image = try? await NetworkLayer.getImage(path: imagePath).send() else{return}
+                        
+                        cell.configureCell(image: image)
+//                        collectionView.reloadItems(at: [indexPath])
+                        self.moviesRequestTask[indexPath] = nil
+                    }
+                    
+                }
                 return cell
             }
            
@@ -209,33 +251,45 @@ class HomeViewController: UIViewController {
         }
     }
 
-    
-    // MARK: - Configure navigationItem
-    func configureNavigationItem(){
-        let netflixLogo = UIImage(named: "netflix")?.withRenderingMode(.alwaysOriginal)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: netflixLogo, style: .done, target: nil, action: nil)
+}
+
+// MARK: - Network Requests
+extension HomeViewController{
+    // MARK: - Network Request
+    func networkRequest(){
+        heroHeader = .heroHeader(HeroHeader())
         
-        navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(image: UIImage(systemName: "person"), style: .done, target: nil, action: nil),
-            UIBarButtonItem(image: UIImage(systemName: "play.rectangle"), style: .done, target: nil, action: nil)
-        ]
-        navigationController?.navigationBar.tintColor = .label
+        topRatednetworkRequest()
+        
+        
+        /*
+        treandingMovies = [.heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader()))]
+        
+        
+        
+        popularMovies = [.heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader()))]
+        upcomingMovies = [.heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader()))]
+        topRatedMovies = [.heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader()))]*/
+        
+//        configureDataSource()
+    }
+    
+    func topRatednetworkRequest(){
+        topRatedRequestTask = Task{
+            guard let movies = try? await NetworkLayer.getTopRatedMovies().send() else{return}
+            
+            if let result = movies.results{
+                result.forEach { show in
+                    treandingMovies.append(.show(show))
+                }
+            }
+            
+            configureDataSource()
+            
+            topRatedRequestTask = nil
+
+        }
+        
     }
     
 }
-
-extension HomeViewController: UICollectionViewDelegate{
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let saveAreaOffset = view.safeAreaInsets.top
-        let scrollViewOffset = scrollView.contentOffset.y + saveAreaOffset
-        
-        navigationController?.navigationBar.transform = .init(translationX: 0, y: -scrollViewOffset)
-    }
-    
- 
-
-    
-}
-
-
-

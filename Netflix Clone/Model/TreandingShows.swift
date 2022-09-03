@@ -17,6 +17,7 @@ struct TreandingShows: Codable {
         case totalResults = "total_results"
     }
 }
+extension TreandingShows: Hashable{}
 
 // MARK: - Result
 struct Show: Codable {
@@ -50,6 +51,7 @@ struct Show: Codable {
         case voteCount = "vote_count"
     }
 }
+extension Show: Hashable{}
 
 enum MediaType: String, Codable {
     case movie = "movie"

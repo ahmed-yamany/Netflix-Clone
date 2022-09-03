@@ -18,6 +18,7 @@ enum ImageRequestError: Error {
 
 protocol APIRequest{
     associatedtype Response
+    var host: String { get } 
     var path: String {get}
     var queryItems: [URLQueryItem]? {get}
     var request: URLRequest {get}
@@ -40,6 +41,7 @@ extension APIRequest{
         component.scheme = "https"
         component.host = host
         component.path = path
+        
         component.queryItems = queryItems == nil ? [apiKey] : queryItems! + [apiKey]
         var request = URLRequest(url: component.url!)
         if let data = postData{
