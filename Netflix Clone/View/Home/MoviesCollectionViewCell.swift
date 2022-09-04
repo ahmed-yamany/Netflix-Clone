@@ -13,14 +13,15 @@ class MoviesCollectionViewCell: UICollectionViewCell {
     // MARK: - SubViews
     private let imageView: UIImageView = {
         let imageVeiw = UIImageView()
-        imageVeiw.contentMode = .scaleAspectFill
+//        imageVeiw.contentMode = .scaleAspectFill
         return imageVeiw
     }()
     
     // MARK: - Views
     override init(frame: CGRect) {
         super.init(frame: frame)
-        addSubview(imageView)
+        contentView.addSubview(imageView)
+
     }
     
     required init?(coder: NSCoder) {
@@ -29,6 +30,7 @@ class MoviesCollectionViewCell: UICollectionViewCell {
     
     override func layoutSubviews() {
         imageView.frame = bounds
+
     }
     
     func configureCell(image: UIImage){

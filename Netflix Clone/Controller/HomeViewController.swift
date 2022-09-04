@@ -51,34 +51,41 @@ class HomeViewController: UIViewController {
      var topRatedMovies: [Item] = []
 
     var moviesRequestTask: [IndexPath: Task<Void, Never>] = [:]
-    var topRatedRequestTask: Task<Void, Never>? = nil
-    
+    var treandingMoviesRequestTask: Task<Void, Never>? = nil
+    var popularMoviesRequestTask: Task<Void, Never>? = nil
+    var upcomingMoviesRequestTask: Task<Void, Never>? = nil
+    var topRatedMoviesRequestTask: Task<Void, Never>? = nil
+
     // MARK: - Views
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        collectionView.register(HeroHeaderCollectionViewCell.self, forCellWithReuseIdentifier: HeroHeaderCollectionViewCell.reuseIdentifer)
-        collectionView.register(SectionHeaderView.self, forSupplementaryViewOfKind: SectionHeaderView.supplementaryViewOfKind, withReuseIdentifier: SectionHeaderView.reuseIdentifer)
-        collectionView.register(MoviesCollectionViewCell.self, forCellWithReuseIdentifier: MoviesCollectionViewCell.reuseIdentifer)
         
-
-        view.backgroundColor = .systemBackground
-        view.addSubview(collectionView)
-        collectionView.collectionViewLayout = collectionViewLayout()
-        configureDataSource()
-        configureNavigationItem()
 
 
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         collectionView.delegate = self
+        view.backgroundColor = .systemBackground
+        view.addSubview(collectionView)
+        collectionView.register(HeroHeaderCollectionViewCell.self, forCellWithReuseIdentifier: HeroHeaderCollectionViewCell.reuseIdentifer)
+        collectionView.register(SectionHeaderView.self, forSupplementaryViewOfKind: SectionHeaderView.supplementaryViewOfKind, withReuseIdentifier: SectionHeaderView.reuseIdentifer)
+        collectionView.register(MoviesCollectionViewCell.self, forCellWithReuseIdentifier: MoviesCollectionViewCell.reuseIdentifer)
+        
+
+        
+        collectionView.collectionViewLayout = collectionViewLayout()
+        endAllTasks()
+        configureNavigationItem()
+        
         networkRequest()
        
-    
     }
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
+    
+    override func viewDidLayoutSubviews() {
         collectionView.frame = view.bounds
+
     }
     
     
@@ -95,7 +102,10 @@ class HomeViewController: UIViewController {
     }
     
     func endAllTasks(){
-        topRatedRequestTask = nil
+//        treandingMoviesRequestTask = nil
+//        popularMoviesRequestTask = nil
+//        upcomingMoviesRequestTask = nil
+//        topRatedMoviesRequestTask = nil
         self.moviesRequestTask.values.forEach({ $0.cancel()})
         self.moviesRequestTask = [:]
 
@@ -115,7 +125,7 @@ extension HomeViewController: UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         moviesRequestTask[indexPath]?.cancel()
     }
-    
+
 }
 
 // MARK: - Configure CollectinsViewDataSource
@@ -141,7 +151,7 @@ extension HomeViewController{
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5)
 
-                let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.85),heightDimension: .estimated(200))
+                let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(300),heightDimension: .absolute(200))
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 2)
                 let section = NSCollectionLayoutSection(group: group)
                 section.orthogonalScrollingBehavior = .continuous
@@ -159,32 +169,17 @@ extension HomeViewController{
     
     // MARK: - Configure Data Source
     func configureDataSource() {
-        endAllTasks()
         
         dataSourceInitialization()
         supplementaryViewProfider()
         snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-        
-        snapshot.appendSections([.header])
         if let heroHeader = heroHeader{
+            snapshot.appendSections([.header])
             snapshot.appendItems([heroHeader], toSection: .header)
         }
         
-        let treandingMoviesSection = Section.movies("Treanding Movies")
-        let popularMoviesSection = Section.movies("Popular")
-        let upcomingMoviesSection = Section.movies("Upcoming Movies")
-        let topRatedMoviesSection = Section.movies("Top rated")
         
-        snapshot.appendSections([treandingMoviesSection, popularMoviesSection, upcomingMoviesSection, topRatedMoviesSection])
-
-        snapshot.appendItems(self.treandingMovies, toSection: treandingMoviesSection)
-        snapshot.appendItems(self.popularMovies, toSection: popularMoviesSection)
-        snapshot.appendItems(self.upcomingMovies, toSection: upcomingMoviesSection)
-        snapshot.appendItems(self.topRatedMovies, toSection: topRatedMoviesSection)
-        self.sections = snapshot.sectionIdentifiers
-        
-        dataSource.apply(snapshot, animatingDifferences: true)
-
+    
     }
 
     
@@ -201,16 +196,15 @@ extension HomeViewController{
                 return cell
             case .movies:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MoviesCollectionViewCell.reuseIdentifer, for: indexPath) as! MoviesCollectionViewCell
-                
+                cell.backgroundColor = .gray
                 if let movie = itemIdentifier.show, let imagePath = movie.posterPath{
                     self.moviesRequestTask[indexPath] = Task{
                         guard let image = try? await NetworkLayer.getImage(path: imagePath).send() else{return}
-                        
+//
                         cell.configureCell(image: image)
-//                        collectionView.reloadItems(at: [indexPath])
                         self.moviesRequestTask[indexPath] = nil
                     }
-                    
+//
                 }
                 return cell
             }
@@ -225,7 +219,7 @@ extension HomeViewController{
         
         let headerItemSize = NSCollectionLayoutSize(widthDimension: width, heightDimension: height)
         let headerItem = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerItemSize, elementKind: supplenentaryKind, alignment: alignment)
-//        headerItem.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
+//        headerItem.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5)
         
         return headerItem
     }
@@ -258,38 +252,86 @@ extension HomeViewController{
     // MARK: - Network Request
     func networkRequest(){
         heroHeader = .heroHeader(HeroHeader())
-        
-        topRatednetworkRequest()
-        
-        
-        /*
-        treandingMovies = [.heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader()))]
-        
-        
-        
-        popularMovies = [.heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader()))]
-        upcomingMovies = [.heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader()))]
-        topRatedMovies = [.heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader())), .heroHeader(HeroHeader()), .heroHeader((HeroHeader()))]*/
-        
-//        configureDataSource()
+        configureDataSource()
+
+        TreandingMoviesnetworkRequest()
+        popularMoviesNetworkRequest()
+        upcomingMoviesNetworkRequest()
+        topRatedMoviesNetWorkRequest()
+
     }
     
-    func topRatednetworkRequest(){
-        topRatedRequestTask = Task{
-            guard let movies = try? await NetworkLayer.getTopRatedMovies().send() else{return}
-            
+    func TreandingMoviesnetworkRequest(){
+        let treandingMoviesSection = Section.movies("Treanding Movies")
+        snapshot.appendSections([treandingMoviesSection])
+        treandingMoviesRequestTask?.cancel()
+        treandingMoviesRequestTask = Task{
+            guard let movies = try? await NetworkLayer.getTreandingMovies().send() else{return}
             if let result = movies.results{
                 result.forEach { show in
                     treandingMovies.append(.show(show))
                 }
             }
-            
-            configureDataSource()
-            
-            topRatedRequestTask = nil
-
+            snapshot.appendItems(self.treandingMovies, toSection: treandingMoviesSection)
+            self.sections = snapshot.sectionIdentifiers
+            await dataSource.apply(snapshot, animatingDifferences: true)
+            treandingMoviesRequestTask = nil
         }
-        
     }
     
+    func popularMoviesNetworkRequest(){
+        let popularMoviesSection = Section.movies("Popular Movies")
+        snapshot.appendSections([popularMoviesSection])
+        popularMoviesRequestTask?.cancel()
+        popularMoviesRequestTask = Task{
+            guard let movies = try? await NetworkLayer.getPopularMovies().send() else{return}
+            if let result = movies.results{
+                result.forEach { show in
+                    popularMovies.append(.show(show))
+                }
+            }
+            snapshot.appendItems(self.popularMovies, toSection: popularMoviesSection)
+            self.sections = snapshot.sectionIdentifiers
+            await dataSource.apply(snapshot, animatingDifferences: true)
+            popularMoviesRequestTask = nil
+        }
+    }
+    
+    func upcomingMoviesNetworkRequest(){
+        let upcomingMoviesSection = Section.movies("Upcoming Movies")
+        snapshot.appendSections([upcomingMoviesSection])
+        upcomingMoviesRequestTask?.cancel()
+        upcomingMoviesRequestTask = Task{
+            guard let movies = try? await NetworkLayer.getUpcomingMovies().send() else{return}
+            if let result = movies.results{
+                result.forEach { show in
+                    upcomingMovies.append(.show(show))
+                }
+            }
+            snapshot.appendItems(self.upcomingMovies, toSection: upcomingMoviesSection)
+            self.sections = snapshot.sectionIdentifiers
+            await dataSource.apply(snapshot, animatingDifferences: true)
+            upcomingMoviesRequestTask = nil
+        }
+    }
+    
+    
+    func topRatedMoviesNetWorkRequest(){
+        let topRatedMoviesSection = Section.movies("Top rated")
+
+        snapshot.appendSections([topRatedMoviesSection])
+        topRatedMoviesRequestTask?.cancel()
+        topRatedMoviesRequestTask = Task{
+            guard let movies = try? await NetworkLayer.getTopRatedMovies().send() else{return}
+            if let result = movies.results{
+                result.forEach { show in
+                    topRatedMovies.append(.show(show))
+                }
+            }
+            snapshot.appendItems(self.topRatedMovies, toSection: topRatedMoviesSection)
+            self.sections = snapshot.sectionIdentifiers
+            await dataSource.apply(snapshot, animatingDifferences: true)
+            topRatedMoviesRequestTask = nil
+        }
+    }
 }
