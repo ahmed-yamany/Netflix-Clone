@@ -13,7 +13,8 @@ class MoviesCollectionViewCell: UICollectionViewCell {
     // MARK: - SubViews
     private let imageView: UIImageView = {
         let imageVeiw = UIImageView()
-//        imageVeiw.contentMode = .scaleAspectFill
+        imageVeiw.contentMode = .scaleAspectFill
+        imageVeiw.clipsToBounds = true
         return imageVeiw
     }()
     

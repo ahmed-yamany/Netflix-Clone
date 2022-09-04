@@ -82,6 +82,7 @@
 		7342FC3E28BF83F400F2BC59 /* Netflix Clone */ = {
 			isa = PBXGroup;
 			children = (
+				735B583E28C0AD5600C56E60 /* Color*.swift */,
 				73C1F2CB28C345C400E82064 /* Managers */,
 				735B583728C0A6AF00C56E60 /* Model */,
 				735B583828C0A6B600C56E60 /* View */,
@@ -91,7 +92,6 @@
 				7342FC4828BF83F500F2BC59 /* Assets.xcassets */,
 				7342FC4A28BF83F500F2BC59 /* LaunchScreen.storyboard */,
 				7342FC4D28BF83F500F2BC59 /* Info.plist */,
-				735B583E28C0AD5600C56E60 /* Color*.swift */,
 			);
 			path = "Netflix Clone";
 			sourceTree = "<group>";

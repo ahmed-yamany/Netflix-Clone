@@ -59,20 +59,15 @@ class NetworkLayer{
         ]
     }
     
-    struct getImage: APIRequest{
+    struct ImageRequest: APIRequest{
         typealias Response = UIImage
 
-        var path: String
-        
         var host:String = "image.tmdb.org"
         
-        init(path:String){
-            self.path = "/t/p/w500/\(path)"
-            
-            
-        }
+        var imagePath: String
         
-        
+        var path: String { "/t/p/w500/\(imagePath)"}
+            
     }
 
     

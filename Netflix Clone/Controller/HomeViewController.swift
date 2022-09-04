@@ -151,7 +151,7 @@ extension HomeViewController{
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5)
 
-                let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(300),heightDimension: .absolute(200))
+                let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(310),heightDimension: .absolute(200))
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 2)
                 let section = NSCollectionLayoutSection(group: group)
                 section.orthogonalScrollingBehavior = .continuous
@@ -199,7 +199,7 @@ extension HomeViewController{
                 cell.backgroundColor = .gray
                 if let movie = itemIdentifier.show, let imagePath = movie.posterPath{
                     self.moviesRequestTask[indexPath] = Task{
-                        guard let image = try? await NetworkLayer.getImage(path: imagePath).send() else{return}
+                        guard let image = try? await NetworkLayer.ImageRequest(imagePath: imagePath).send() else{return}
 //
                         cell.configureCell(image: image)
                         self.moviesRequestTask[indexPath] = nil

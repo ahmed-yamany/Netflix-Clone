@@ -14,9 +14,10 @@ class UpComingTableViewCell: UITableViewCell {
     
     let PosterImageView: UIImageView = {
         let imageView = UIImageView()
-//        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.backgroundColor = .green
+        imageView.clipsToBounds = true
         return imageView
     }()
     
@@ -26,7 +27,6 @@ class UpComingTableViewCell: UITableViewCell {
         label.textColor = .label
         label.font = UIFont.systemFont(ofSize: 15, weight: .medium)
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Ahmed ahmed Ahmed"
         label.numberOfLines = 0
         return label
     }()
@@ -88,7 +88,7 @@ class UpComingTableViewCell: UITableViewCell {
         self.nameLabel.text = model.title ?? model.originalTitle ?? "UnKnown"
         if let posterPath = model.posterPath{
             Task{
-                let image = try await NetworkLayer.getImage(path: posterPath).send()
+                let image = try await NetworkLayer.ImageRequest(imagePath: posterPath).send()
                 PosterImageView.image = image
             }
         }
