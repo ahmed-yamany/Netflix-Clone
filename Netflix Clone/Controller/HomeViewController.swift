@@ -256,7 +256,7 @@ extension HomeViewController{
 
         TreandingMoviesnetworkRequest()
         popularMoviesNetworkRequest()
-        upcomingMoviesNetworkRequest()
+//        upcomingMoviesNetworkRequest()
         topRatedMoviesNetWorkRequest()
 
     }
