@@ -21,6 +21,7 @@
 		7372AB5328C2617E00130A4C /* SectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7372AB5228C2617E00130A4C /* SectionHeaderView.swift */; };
 		73942F6E28C221C500074E9D /* HomeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73942F6D28C221C500074E9D /* HomeButton.swift */; };
 		73B31D4028C4B76F0068067B /* UpComingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73B31D3F28C4B76F0068067B /* UpComingTableViewCell.swift */; };
+		73B31D4428C52EFF0068067B /* SearchResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73B31D4328C52EFF0068067B /* SearchResultViewController.swift */; };
 		73C1F2CE28C345F900E82064 /* APIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73C1F2CD28C345F900E82064 /* APIRequest.swift */; };
 		73C1F2D128C34B6A00E82064 /* NetworkLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73C1F2D028C34B6A00E82064 /* NetworkLayer.swift */; };
 		73C1F2D328C34BA600E82064 /* TreandingShows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73C1F2D228C34BA600E82064 /* TreandingShows.swift */; };
@@ -45,6 +46,7 @@
 		7372AB5228C2617E00130A4C /* SectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeaderView.swift; sourceTree = "<group>"; };
 		73942F6D28C221C500074E9D /* HomeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeButton.swift; sourceTree = "<group>"; };
 		73B31D3F28C4B76F0068067B /* UpComingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpComingTableViewCell.swift; sourceTree = "<group>"; };
+		73B31D4328C52EFF0068067B /* SearchResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewController.swift; sourceTree = "<group>"; };
 		73C1F2CD28C345F900E82064 /* APIRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequest.swift; sourceTree = "<group>"; };
 		73C1F2D028C34B6A00E82064 /* NetworkLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkLayer.swift; sourceTree = "<group>"; };
 		73C1F2D228C34BA600E82064 /* TreandingShows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreandingShows.swift; sourceTree = "<group>"; };
@@ -99,11 +101,9 @@
 		7342FC5328BFA94000F2BC59 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				73B31D4228C52ED10068067B /* General */,
+				73B31D4128C523580068067B /* Core */,
 				7342FC4328BF83F400F2BC59 /* MainTabBarController.swift */,
-				7342FC5528BFAB6000F2BC59 /* HomeViewController.swift */,
-				7342FC5728BFAB7200F2BC59 /* UpComingViewController.swift */,
-				7342FC5928BFAB8700F2BC59 /* SearchViewController.swift */,
-				7342FC5B28BFAB9600F2BC59 /* DownloadsViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -167,6 +167,25 @@
 				73B31D3F28C4B76F0068067B /* UpComingTableViewCell.swift */,
 			);
 			path = UpComing;
+			sourceTree = "<group>";
+		};
+		73B31D4128C523580068067B /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				7342FC5528BFAB6000F2BC59 /* HomeViewController.swift */,
+				7342FC5728BFAB7200F2BC59 /* UpComingViewController.swift */,
+				7342FC5928BFAB8700F2BC59 /* SearchViewController.swift */,
+				7342FC5B28BFAB9600F2BC59 /* DownloadsViewController.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		73B31D4228C52ED10068067B /* General */ = {
+			isa = PBXGroup;
+			children = (
+				73B31D4328C52EFF0068067B /* SearchResultViewController.swift */,
+			);
+			path = General;
 			sourceTree = "<group>";
 		};
 		73C1F2CB28C345C400E82064 /* Managers */ = {
@@ -258,6 +277,7 @@
 				73FEAA8C28C11B710059B940 /* HeroHeaderCollectionViewCell.swift in Sources */,
 				7342FC4428BF83F400F2BC59 /* MainTabBarController.swift in Sources */,
 				7342FC5C28BFAB9600F2BC59 /* DownloadsViewController.swift in Sources */,
+				73B31D4428C52EFF0068067B /* SearchResultViewController.swift in Sources */,
 				7342FC4028BF83F400F2BC59 /* AppDelegate.swift in Sources */,
 				7372AB5328C2617E00130A4C /* SectionHeaderView.swift in Sources */,
 				73C1F2D128C34B6A00E82064 /* NetworkLayer.swift in Sources */,

@@ -69,6 +69,21 @@ class NetworkLayer{
         var path: String { "/t/p/w500/\(imagePath)"}
             
     }
+    
+    struct SearchRequest: APIRequest{
+        typealias Response = TreandingShows
+        
+        var path: String = "/3/search/movie"
+        var queryItems: [URLQueryItem]?
+        init(query: String){
+            self.queryItems = [
+                URLQueryItem(name: "language", value: "en-US"),
+                URLQueryItem(name: "page", value: "1"),
+                URLQueryItem(name: "query", value: query)
+            ]
+        }
+        
+    }
 
     
 

@@ -11,8 +11,9 @@ class HomeButton: UIButton {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        layer.borderColor = UIColor.white.cgColor
+        layer.borderColor = UIColor.label.cgColor
         layer.borderWidth = 1
+        setTitleColor(UIColor.label, for: .normal)
         widthAnchor.constraint(equalToConstant: 120).isActive = true
 
     }

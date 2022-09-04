@@ -33,6 +33,7 @@ class HeroHeaderCollectionViewCell: UICollectionViewCell {
     private let playButton: HomeButton = {
         let button = HomeButton()
         button.setTitle("Play", for: .normal)
+        
         return button
     }()
 

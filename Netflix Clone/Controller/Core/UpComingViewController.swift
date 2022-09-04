@@ -20,6 +20,7 @@ class UpComingViewController: UIViewController {
     
     var upcomingMoviesRequestTask: Task<Void, Never>? = nil
     
+    // MARK: - Views
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -58,7 +59,7 @@ extension UpComingViewController: UITableViewDelegate, UITableViewDataSource{
     }
 }
 
-
+// MARK: - Network Request
 extension UpComingViewController{
     func upcomingMoviesNetworkRequest(){
         
