@@ -9,8 +9,7 @@ import UIKit
 
 class UpComingTableViewCell: UITableViewCell {
     static let reuseIdentifer = "UpComingTableViewCell"
-
-    
+    var movie: Show?
     
     let PosterImageView: UIImageView = {
         let imageView = UIImageView()
@@ -27,7 +26,7 @@ class UpComingTableViewCell: UITableViewCell {
         label.textColor = .label
         label.font = UIFont.systemFont(ofSize: 15, weight: .medium)
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.numberOfLines = 0
+        label.numberOfLines = 3
         return label
     }()
     
@@ -35,7 +34,7 @@ class UpComingTableViewCell: UITableViewCell {
        let button = UIButton()
         let image = UIImage(systemName: "play.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))
         button.setImage(image, for: .normal)
-        button.tintColor = .white
+        button.tintColor = .label
         button.translatesAutoresizingMaskIntoConstraints = false
         
         return button
@@ -68,23 +67,25 @@ class UpComingTableViewCell: UITableViewCell {
         
         let playButtonConstraints = [
             playButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            playButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10)
+            playButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -5)
         ]
         
         let nameLabelConstraints = [
             nameLabel.leadingAnchor.constraint(equalTo: PosterImageView.trailingAnchor, constant: 10),
-//            nameLabel.trailingAnchor.constraint(equalTo: playButton.leadingAnchor, constant: -10),
+//            nameLabel.trailingAnchor.constraint(equalTo: playButton.leadingAnchor),
             nameLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
         ]
         
         
         NSLayoutConstraint.activate(posterImageViewConstraints)
-        NSLayoutConstraint.activate(nameLabelConstraints)
         NSLayoutConstraint.activate(playButtonConstraints)
+        NSLayoutConstraint.activate(nameLabelConstraints)
+
 
     }
     
     func configureCell(with model: Show){
+        self.movie = model
         self.nameLabel.text = model.title ?? model.originalTitle ?? "UnKnown"
         if let posterPath = model.posterPath{
             Task{

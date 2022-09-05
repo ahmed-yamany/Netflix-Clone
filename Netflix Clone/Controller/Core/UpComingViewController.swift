@@ -57,6 +57,16 @@ extension UpComingViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 150
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        guard let cell = tableView.cellForRow(at: indexPath) as? UpComingTableViewCell else{return}
+        let movie = cell.movie
+        
+        let VC = MovieDetailsViewController(movie: movie)
+        navigationController?.pushViewController(VC, animated: true)
+
+    }
 }
 
 // MARK: - Network Request

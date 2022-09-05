@@ -16,7 +16,7 @@ class SearchViewController: UIViewController {
     }()
     
     let searchController: UISearchController = {
-       let searchController = UISearchController(searchResultsController: SearchResultViewController())
+        let searchController = UISearchController(searchResultsController: SearchResultViewController())
         searchController.searchBar.tintColor = .label
         return searchController
     }()
@@ -42,7 +42,7 @@ class SearchViewController: UIViewController {
 extension SearchViewController: UISearchResultsUpdating{
     func updateSearchResults(for searchController: UISearchController) {
         let query = searchController.searchBar.text
-        guard let query = query, let searchResultVC = searchController.searchResultsController as? SearchResultViewController else{return}
+        guard let query = query, query.count > 3, let searchResultVC = searchController.searchResultsController as? SearchResultViewController else{return}
         searchResultVC.searchMoviesNetworkRequest(query: query)
     }
     

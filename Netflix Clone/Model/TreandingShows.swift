@@ -19,7 +19,7 @@ struct TreandingShows: Codable {
 }
 extension TreandingShows: Hashable{}
 
-// MARK: - Result
+// MARK: - Show
 struct Show: Codable {
     var adult: Bool?
     var backdropPath: String?

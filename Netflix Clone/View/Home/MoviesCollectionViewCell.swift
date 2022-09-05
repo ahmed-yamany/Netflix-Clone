@@ -10,6 +10,8 @@ import UIKit
 class MoviesCollectionViewCell: UICollectionViewCell {
     static let reuseIdentifer = "MoviesCollectionViewCell"
     
+    var movie: Show?
+    
     // MARK: - SubViews
     private let imageView: UIImageView = {
         let imageVeiw = UIImageView()
@@ -34,8 +36,9 @@ class MoviesCollectionViewCell: UICollectionViewCell {
 
     }
     
-    func configureCell(image: UIImage){
+    func configureCell(movie:Show, image: UIImage){
        imageView.image = image
+        self.movie = movie
    }
     
     

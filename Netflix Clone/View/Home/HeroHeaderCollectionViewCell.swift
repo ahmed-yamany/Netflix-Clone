@@ -16,6 +16,7 @@ class HeroHeaderCollectionViewCell: UICollectionViewCell {
     private let imageView: UIImageView = {
         let imageVeiw = UIImageView()
         imageVeiw.contentMode = .scaleAspectFill
+        imageVeiw.clipsToBounds = true
         return imageVeiw
     }()
     
@@ -90,8 +91,13 @@ class HeroHeaderCollectionViewCell: UICollectionViewCell {
     
     
     // MARK: - Configure Cell
-     func configureCell(heroHeader: HeroHeader){
-        imageView.backgroundColor = heroHeader.color
+     func configureCell(heroHeader: Show){
+         imageView.backgroundColor = .random
+         Task{
+             guard let imagePath = heroHeader.posterPath else{return}
+             let image = try await NetworkLayer.ImageRequest(imagePath: imagePath).send()
+             self.imageView.image = image
+         }
     }
     
     

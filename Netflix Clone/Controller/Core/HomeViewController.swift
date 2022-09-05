@@ -19,17 +19,9 @@ class HomeViewController: UIViewController {
            case movies(String)
        }
         enum Item: Hashable{
-            case heroHeader(HeroHeader)
-            case show(Show)
+            case show(Show?)
             
-            var heroHeader: HeroHeader? {
-                if case .heroHeader(let header) = self {
-                    return header
-                } else {
-                    return nil
-                }
-            }
-            var show: Show?{
+                var show: Show?{
                 if case .show(let show) = self {
                     return show
                 } else {
@@ -40,8 +32,8 @@ class HomeViewController: UIViewController {
         }
     
     // MARK: - Properties
-    var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
-    var snapshot: NSDiffableDataSourceSnapshot<Section, Item>!
+    var dataSource: UICollectionViewDiffableDataSource<Section, Item?>!
+    var snapshot =  NSDiffableDataSourceSnapshot<Section, Item?>()
     var sections = [Section]()
     
      var heroHeader: Item? = nil
@@ -57,12 +49,7 @@ class HomeViewController: UIViewController {
     var topRatedMoviesRequestTask: Task<Void, Never>? = nil
 
     // MARK: - Views
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-
-
-    }
+   
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -80,6 +67,7 @@ class HomeViewController: UIViewController {
         configureNavigationItem()
         
         networkRequest()
+//        navigationController?.pushViewController(MovieDetailsViewController(), animated: true)
        
     }
     
@@ -106,8 +94,8 @@ class HomeViewController: UIViewController {
 //        popularMoviesRequestTask = nil
 //        upcomingMoviesRequestTask = nil
 //        topRatedMoviesRequestTask = nil
-        self.moviesRequestTask.values.forEach({ $0.cancel()})
-        self.moviesRequestTask = [:]
+        self.moviesRequestTask.values .forEach({ $0.cancel()})
+//        self.moviesRequestTask = [:]
 
     }
 }
@@ -124,6 +112,14 @@ extension HomeViewController: UICollectionViewDelegate{
     // end task for not showing cell
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         moviesRequestTask[indexPath]?.cancel()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? MoviesCollectionViewCell else{return}
+        let movie = cell.movie
+        
+        let VC = MovieDetailsViewController(movie: movie)
+        navigationController?.pushViewController(VC, animated: true)
     }
 
 }
@@ -169,15 +165,12 @@ extension HomeViewController{
     
     // MARK: - Configure Data Source
     func configureDataSource() {
-        
         dataSourceInitialization()
         supplementaryViewProfider()
-        snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-        if let heroHeader = heroHeader{
-            snapshot.appendSections([.header])
-            snapshot.appendItems([heroHeader], toSection: .header)
-        }
-        
+//        snapshot.appendItems([.show(nil)], toSection: .header)
+//        sections = snapshot.sectionIdentifiers
+//        dataSource.apply(snapshot, animatingDifferences: true)
+
         
     
     }
@@ -190,18 +183,21 @@ extension HomeViewController{
             switch section{
             case .header:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HeroHeaderCollectionViewCell.reuseIdentifer, for: indexPath) as! HeroHeaderCollectionViewCell
-                if let item = itemIdentifier.heroHeader{
+                
+                if let itemIdentifier = itemIdentifier, let item = itemIdentifier.show{
                     cell.configureCell(heroHeader: item)
                 }
+                
+                
                 return cell
             case .movies:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MoviesCollectionViewCell.reuseIdentifer, for: indexPath) as! MoviesCollectionViewCell
                 cell.backgroundColor = .gray
-                if let movie = itemIdentifier.show, let imagePath = movie.posterPath{
+                if let itemIdentifier = itemIdentifier, let movie = itemIdentifier.show, let imagePath = movie.posterPath{
                     self.moviesRequestTask[indexPath] = Task{
                         guard let image = try? await NetworkLayer.ImageRequest(imagePath: imagePath).send() else{return}
 //
-                        cell.configureCell(image: image)
+                        cell.configureCell(movie: movie, image: image)
                         self.moviesRequestTask[indexPath] = nil
                     }
 //
@@ -244,26 +240,28 @@ extension HomeViewController{
             
         }
     }
-
 }
 
 // MARK: - Network Requests
 extension HomeViewController{
     // MARK: - Network Request
     func networkRequest(){
-        heroHeader = .heroHeader(HeroHeader())
         configureDataSource()
+        snapshot.appendSections([.header])
 
         TreandingMoviesnetworkRequest()
+
         popularMoviesNetworkRequest()
-//        upcomingMoviesNetworkRequest()
+        upcomingMoviesNetworkRequest()
         topRatedMoviesNetWorkRequest()
 
     }
     
     func TreandingMoviesnetworkRequest(){
         let treandingMoviesSection = Section.movies("Treanding Movies")
+        
         snapshot.appendSections([treandingMoviesSection])
+        
         treandingMoviesRequestTask?.cancel()
         treandingMoviesRequestTask = Task{
             guard let movies = try? await NetworkLayer.getTreandingMovies().send() else{return}
@@ -273,8 +271,15 @@ extension HomeViewController{
                 }
             }
             snapshot.appendItems(self.treandingMovies, toSection: treandingMoviesSection)
+            
+            heroHeader = treandingMovies.randomElement()
+            if let heroHeader = heroHeader{
+                snapshot.appendItems([heroHeader], toSection: .header)
+            }
+            
             self.sections = snapshot.sectionIdentifiers
             await dataSource.apply(snapshot, animatingDifferences: true)
+          
             treandingMoviesRequestTask = nil
         }
     }

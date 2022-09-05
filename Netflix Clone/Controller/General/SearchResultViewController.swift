@@ -45,11 +45,12 @@ extension SearchResultViewController: UICollectionViewDataSource, UICollectionVi
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MoviesCollectionViewCell.reuseIdentifer, for: indexPath) as? MoviesCollectionViewCell else{
             return UICollectionViewCell()
         }
-        
-        if let posterPath = searchMovies[indexPath.row].posterPath{
+        let movie = searchMovies[indexPath.row]
+//        cell.movie = movie
+        if let posterPath = movie.posterPath{
             Task{
                 let image = try await NetworkLayer.ImageRequest(imagePath: posterPath).send()
-                cell.configureCell(image: image)
+                cell.configureCell(movie: movie, image: image)
             }
         }
               
@@ -73,6 +74,16 @@ extension SearchResultViewController: UICollectionViewDataSource, UICollectionVi
         }
         
         return layout
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("selected")
+        guard let cell = collectionView.cellForItem(at: indexPath) as? MoviesCollectionViewCell else{return}
+        let movie = cell.movie
+        
+        let VC = MovieDetailsViewController(movie: movie)
+        present(VC, animated: true)
+//        navigationController?.pushViewController(VC, animated: true)
     }
     
 }
